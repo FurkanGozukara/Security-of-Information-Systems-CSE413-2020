@@ -1,0 +1,640 @@
+
+One-key MAC
+From Wikipedia, the free encyclopedia
+Jump to navigationJump to search
+"CMAC" redirects here. For other uses, see CMAC (disambiguation).
+One-key MAC (OMAC) is a message authentication code constructed from a block cipher much like the CBC-MAC algorithm.
+
+Officially there are two OMAC algorithms (OMAC1 and OMAC2) which are both essentially the same except for a small tweak. OMAC1 is equivalent to CMAC, which became an NIST recommendation in May 2005.
+
+It is free for all uses: it is not covered by any patents.[1] In cryptography, CMAC (Cipher-based Message Authentication Code)[2] is a block cipher-based message authentication code algorithm. It may be used to provide assurance of the authenticity and, hence, the integrity of binary data. This mode of operation fixes security deficiencies of CBC-MAC (CBC-MAC is secure only for fixed-length messages).
+
+The core of the CMAC algorithm is a variation of CBC-MAC that Black and Rogaway proposed and analyzed under the name XCBC[3] and submitted to NIST.[4] The XCBC algorithm efficiently addresses the security deficiencies of CBC-MAC, but requires three keys. Iwata and Kurosawa proposed an improvement of XCBC and named the resulting algorithm One-Key CBC-MAC (OMAC) in their papers.[5] They later submitted OMAC1,[6] a refinement of OMAC, and additional security analysis.[7] The OMAC algorithm reduces the amount of key material required for XCBC. CMAC is equivalent to OMAC1.
+
+CMAC - Cipher-based Message Authentication Code.pdf
+
+To generate an ℓ-bit CMAC tag (t) of a message (m) using a b-bit block cipher (E) and a secret key (k), one first generates two b-bit sub-keys (k1 and k2) using the following algorithm (this is equivalent to multiplication by x and x2 in a finite field GF(2b)). Let ≪ denote the standard left-shift operator and ⊕ denote bit-wise exclusive or:
+
+Calculate a temporary value k0 = Ek(0).
+If msb(k0) = 0, then k1 = k0 ≪ 1, else k1 = (k0 ≪ 1) ⊕ C; where C is a certain constant that depends only on b. (Specifically, C is the non-leading coefficients of the lexicographically first irreducible degree-b binary polynomial with the minimal number of ones: 0x1B for 64-bit, 0x87 for 128-bit, and 0x425 for 256-bit blocks.)
+If msb(k1) = 0, then k2 = k1 ≪ 1, else k2 = (k1 ≪ 1) ⊕ C.
+Return keys (k1, k2) for the MAC generation process.
+As a small example, suppose b = 4, C = 00112, and k0 = Ek(0) = 01012. Then k1 = 10102 and k2 = 0100 ⊕ 0011 = 01112.
+
+The CMAC tag generation process is as follows:
+
+Divide message into b-bit blocks m = m1 ∥ ... ∥ mn−1 ∥ mn, where m1, ..., mn−1 are complete blocks. (The empty message is treated as one incomplete block.)
+If mn is a complete block then mn′ = k1 ⊕ mn else mn′ = k2 ⊕ (mn ∥ 10...02).
+Let c0 = 00...02.
+For i = 1, ..., n − 1, calculate ci = Ek(ci−1 ⊕ mi).
+cn = Ek(cn−1 ⊕ mn′)
+Output t = msbℓ(cn).
+The verification process is as follows:
+
+Use the above algorithm to generate the tag.
+Check that the generated tag is equal to the received tag.
+Implementations
+Python implementation: see the usage of the AES_CMAC() function in "impacket/blob/master/tests/misc/test_crypto.py", and its definition in "impacket/blob/master/impacket/crypto.py" [8].
+Ruby implementation [9]
+References
+ Rogaway, Phillip. "CMAC: Non-licensing". Retrieved May 27, 2020. Phillip Rogaway's statement on intellectual property status of CMAC
+ Dworkin, M J (2016). "Recommendation for block cipher modes of operation" (PDF). doi:10.6028/nist.sp.800-38b.
+ Black, John; Rogaway, Phillip (2000-08-20). Advances in Cryptology – CRYPTO 2000. Springer, Berlin, Heidelberg. pp. 197–215. doi:10.1007/3-540-44598-6_12. ISBN 978-3540445982.
+ Black, J; Rogaway, P. "A Suggestion for Handling Arbitrary-Length Messages with the CBC MAC" (PDF).
+ Iwata, Tetsu; Kurosawa, Kaoru (2003-02-24). "OMAC: One-Key CBC MAC". Fast Software Encryption. Lecture Notes in Computer Science. 2887. Springer, Berlin, Heidelberg. pp. 129–153. doi:10.1007/978-3-540-39887-5_11. ISBN 978-3-540-20449-7.
+ Iwata, Tetsu; Kurosawa, Kaoru (2003). "OMAC: One-Key CBC MAC – Addendum" (PDF).
+ Iwata, Tetsu; Kurosawa, Kaoru (2003-12-08). "Stronger Security Bounds for OMAC, TMAC, and XCBC". In Johansson, Thomas; Maitra, Subhamoy (eds.). Progress in Cryptology – INDOCRYPT 2003. Lecture Notes in Computer Science. Springer Berlin Heidelberg. pp. 402–415. CiteSeerX 10.1.1.13.8229. doi:10.1007/978-3-540-24582-7_30. ISBN 9783540206095.
+ "Impacket is a collection of Python classes for working with network protocols.: SecureAuthCorp/impacket". 15 December 2018 – via GitHub.
+ "Ruby C extension for the AES-CMAC keyed hash function (RFC 4493): louismullie/cmac-rb". 4 May 2016 – via GitHub.
+External links
+RFC 4493 The AES-CMAC Algorithm
+RFC 4494 The AES-CMAC-96 Algorithm and Its Use with IPsec
+RFC 4615 The Advanced Encryption Standard-Cipher-based Message Authentication Code-Pseudo-Random Function-128 (AES-CMAC-PRF-128)
+OMAC Online Test
+More information on OMAC
+vte
+Cryptographic hash functions & message authentication codes
+ListComparisonKnown attacks
+Common functions	
+MD5SHA-1SHA-2SHA-3BLAKE2
+SHA-3 finalists	
+BLAKEGrøstlJHSkeinKeccak (winner)
+Other functions	
+BLAKE3CubeHashECOHFSBGOSTHAS-160HAVALKupynaLSHMD2MD4MD6MDC-2N-hashRIPEMDRadioGatúnSM3SWIFFTSnefruStreebogTigerVSHWhirlpool
+Password hashing/
+key stretching functions	
+Argon2BalloonbcryptCatenacryptLM hashLyra2MakwaPBKDF2scryptyescrypt
+General purpose
+key derivation functions	
+HKDFKDF1/KDF2
+MAC functions	
+DAACBC-MACGMACHMACNMACOMAC/CMACPMACVMACUMACPoly1305SipHash
+Authenticated
+encryption modes	
+CCMCWCEAXGCMIAPMOCB
+Attacks	
+Collision attackPreimage attackBirthday attackBrute-force attackRainbow tableSide-channel attackLength extension attack
+Design	
+Avalanche effectHash collisionMerkle–Damgård constructionSponge functionHAIFA construction
+Standardization	
+CRYPTRECNESSIENIST hash function competition
+Utilization	
+Hash-based cryptographyMerkle treeMessage authenticationProof of workSaltPepper
+vte
+Cryptography
+Categories: Message authentication codesFinite fields
+Navigation menu
+Not logged inTalkContributionsCreate accountLog in
+ArticleTalk
+ReadEditView historySearch
+Search Wikipedia
+Main page
+Contents
+Current events
+Random article
+About Wikipedia
+Contact us
+Donate
+Contribute
+Help
+Learn to edit
+Community portal
+Recent changes
+Upload file
+Tools
+What links here
+Related changes
+Special pages
+Permanent link
+Page information
+Cite this page
+Wikidata item
+Print/export
+Download as PDF
+Printable version
+
+Languages
+Türkçe
+Edit links
+This page was last edited on 27 May 2020, at 08:13 (UTC).
+Text is available under the Creative Commons Attribution-ShareAlike License; additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy. Wikipedia® is a registered trademark of the Wikimedia Foundation, Inc., a non-profit organization.
+Privacy policyAbout WikipediaDisclaimersContact WikipediaMobile viewDevelopersStatisticsCookie statementWikimedia FoundationPowered by MediaWiki
+
+CMAC (disambiguation)
+From Wikipedia, the free encyclopedia
+Jump to navigationJump to search
+CMAC is the Cipher-based Message Authentication Code, a cryptographic algorithm.
+
+CMAC may also refer to:
+
+
+Contents
+1	Science and technology
+2	Organizations
+3	Other uses
+4	See also
+Science and technology
+Cerebellar model articulation controller, type of neural network
+Continuous monitoring and adaptive control (stormwater management), a type of stormwater BMP
+Organizations
+Cambodian Mine Action Centre, see Land mines in Cambodia
+Center for Maritime Archaeology and Conservation (CMAC), at Texas A&M University, US
+Court Martial Appeal Court of Canada
+Crystal Mountain Alpine Club, a ski racing club at the Crystal Mountain ski resort in Washington State, US
+Other uses
+Constellation Brands – Marvin Sands Performing Arts Center, an outdoor concert venue in Canadaigua, New York, US
+See also
+C-MAC (disambiguation)
+Disambiguation icon	This disambiguation page lists articles associated with the title CMAC.
+If an internal link led you here, you may wish to change the link to point directly to the intended article.
+Categories: Disambiguation pages
+Navigation menu
+Not logged inTalkContributionsCreate accountLog in
+ArticleTalk
+ReadEditView historySearch
+Search Wikipedia
+Main page
+Contents
+Current events
+Random article
+About Wikipedia
+Contact us
+Donate
+Contribute
+Help
+Learn to edit
+Community portal
+Recent changes
+Upload file
+Tools
+What links here
+Related changes
+Special pages
+Permanent link
+Page information
+Cite this page
+Wikidata item
+Print/export
+Download as PDF
+Printable version
+
+Languages
+Add links
+This page was last edited on 11 January 2019, at 20:46 (UTC).
+Text is available under the Creative Commons Attribution-ShareAlike License; additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy. Wikipedia® is a registered trademark of the Wikimedia Foundation, Inc., a non-profit organization.
+Privacy policyAbout WikipediaDisclaimersContact WikipediaMobile viewDevelopersStatisticsCookie statementWikimedia FoundationPowered by MediaWiki
+
+CBC-MAC
+From Wikipedia, the free encyclopedia
+Jump to navigationJump to search
+In cryptography, a cipher block chaining message authentication code (CBC-MAC) is a technique for constructing a message authentication code from a block cipher. The message is encrypted with some block cipher algorithm in CBC mode to create a chain of blocks such that each block depends on the proper encryption of the previous block. This interdependence ensures that a change to any of the plaintext bits will cause the final encrypted block to change in a way that cannot be predicted or counteracted without knowing the key to the block cipher.
+
+To calculate the CBC-MAC of message m, one encrypts m in CBC mode with zero initialization vector and keeps the last block. The following figure sketches the computation of the CBC-MAC of a message comprising blocks {\displaystyle m_{1}\|m_{2}\|\cdots \|m_{x}}m_{1}\|m_{2}\|\cdots \|m_{x} using a secret key k and a block cipher E:
+
+CBC-MAC structure (en).svg
+
+
+Contents
+1	Security with fixed and variable-length messages
+1.1	Length prepending
+1.2	Encrypt-last-block
+2	Attack methods
+2.1	Using the same key for encryption and authentication
+2.2	Allowing the initialization vector to vary in value
+2.3	Using predictable initialization vector
+3	Standards that define the algorithm
+4	See also
+5	References
+Security with fixed and variable-length messages
+If the block cipher used is secure (meaning that it is a pseudorandom permutation), then CBC-MAC is secure for fixed-length messages.[1] However, by itself, it is not secure for variable-length messages. Thus, any single key must only be used for messages of a fixed and known length. This is because an attacker who knows the correct message-tag (i.e. CBC-MAC) pairs for two messages {\displaystyle (m,t)}{\displaystyle (m,t)} and {\displaystyle (m',t')}{\displaystyle (m',t')} can generate a third message {\displaystyle m''}m'' whose CBC-MAC will also be {\displaystyle t'}t'. This is simply done by XORing the first block of {\displaystyle m'}m' with t and then concatenating m with this modified {\displaystyle m'}m'; i.e., by making {\displaystyle m''=m\|[(m_{1}'\oplus t)\|m_{2}'\|\dots \|m_{x}']}m''=m\|[(m_{1}'\oplus t)\|m_{2}'\|\dots \|m_{x}']. When computing the MAC for the message {\displaystyle m''}m'', it follows that we compute the MAC for m in the usual manner as t, but when this value is chained forwards to the stage computing {\displaystyle E_{K_{\text{MAC}}}(m_{1}'\oplus t)}E_{K_{\text{MAC}}}(m_{1}'\oplus t) we will perform an exclusive OR operation with the value derived for the MAC of the first message. The presence of that tag in the new message means it will cancel, leaving no contribution to the MAC from the blocks of plain text in the first message m: {\displaystyle E_{K_{\text{MAC}}}(m_{1}'\oplus t\oplus t)=E_{K_{\text{MAC}}}(m_{1}')}E_{K_{\text{MAC}}}(m_{1}'\oplus t\oplus t)=E_{K_{\text{MAC}}}(m_{1}') and thus the tag for {\displaystyle m''}m'' is {\displaystyle t'}t'.
+
+This problem cannot be solved by adding a message-size block to the end.[2] There are three main ways of modifying CBC-MAC so that it is secure for variable length messages: 1) Input-length key separation; 2) Length-prepending; 3) Encrypt last block.[2] In such a case, it may also be recommended to use a different mode of operation, for example, CMAC or HMAC to protect the integrity of variable-length messages.
+
+Length prepending
+One solution is to include the length of the message in the first block;[3] in fact CBC-MAC has been proven secure as long as no two messages that are prefixes of each other are ever used and prepending the length is a special case of this.[4] This can be problematic if the message length may not be known when processing begins.
+
+Encrypt-last-block
+Encrypt-last-block CBC-MAC (ECBC-MAC)[5] is defined as CBC-MAC-ELB(m, (k1, k2)) = E(k2, CBC-MAC(k1, m)).[2] Compared to the other discussed methods of extending CBC-MAC to variable-length messages, encrypt-last-block has the advantage of not needing to know the length of the message until the end of the computation.
+
+
+Computation of CBC-MAC Encrypt-last-block.
+Attack methods
+As with many cryptographic schemes, naïve use of ciphers and other protocols may lead to attacks being possible, reducing the effectiveness of the cryptographic protection (or even rendering it useless). We present attacks which are possible due to using the CBC-MAC incorrectly.[6]
+
+Using the same key for encryption and authentication
+One common mistake is to reuse the same key k for CBC encryption and CBC-MAC. Although a reuse of a key for different purposes is a bad practice in general, in this particular case the mistake leads to a spectacular attack:
+
+Suppose Alice has sent to Bob the cipher text blocks {\displaystyle C=C_{1}\|C_{2}\|\dots \|C_{n}}{\displaystyle C=C_{1}\|C_{2}\|\dots \|C_{n}}. During the transmission process, Eve can tamper with any of the {\displaystyle C_{1},\dots ,C_{n-1}}C_{1},\dots ,C_{n-1} cipher-text blocks and adjust any of the bits therein as she chooses, provided that the final block, {\displaystyle C_{n}}C_{n}, remains the same. We assume, for the purposes of this example and without loss of generality, that the initialization vector used for the encryption process is a vector of zeroes.
+
+When Bob receives the message, he will first decrypt the message by reversing the encryption process which Alice applied, using the cipher text blocks {\displaystyle C=C_{1}\|C_{2}\|\cdots \|C_{n}}{\displaystyle C=C_{1}\|C_{2}\|\cdots \|C_{n}}. The tampered message, delivered to Bob in replacement of Alice's original, is {\displaystyle C'=C_{1}'\|\dots \|C_{n-1}'\|C_{n}}{\displaystyle C'=C_{1}'\|\dots \|C_{n-1}'\|C_{n}}.
+
+Bob first decrypts the message received using the shared secret key K to obtain corresponding plain text. Note that all plain text produced will be different from that which Alice originally sent, because Eve has modified all but the last cipher text block. In particular, the final plain text, {\displaystyle P_{n}'}P_{n}', differs from the original, {\displaystyle P_{n}}P_{n}, which Alice sent; although {\displaystyle C_{n}}C_{n} is the same, {\displaystyle C_{n-1}'\not =C_{n-1}}C_{n-1}'\not =C_{n-1}, so a different plain text {\displaystyle P_{n}'}P_{n}' is produced when chaining the previous cipher text block into the exclusive-OR after decryption of {\displaystyle C_{n}}C_{n}: {\displaystyle P_{n}'=C_{n-1}'\oplus E_{K}^{-1}(C_{n})}P_{n}'=C_{n-1}'\oplus E_{K}^{-1}(C_{n}).
+
+It follows that Bob will now compute the authentication tag using CBC-MAC over all the values of plain text which he decoded. The tag for the new message, {\displaystyle t'}t', is given by:
+
+{\displaystyle t'=E_{K}(P_{n}'\oplus E_{K}(P_{n-1}'\oplus E_{K}(\dots \oplus E_{K}(P_{1}'))))}t'=E_{K}(P_{n}'\oplus E_{K}(P_{n-1}'\oplus E_{K}(\dots \oplus E_{K}(P_{1}'))))
+Notice that this expression is equal to
+
+{\displaystyle t'=E_{K}(P_{n}'\oplus C_{n-1}')}t'=E_{K}(P_{n}'\oplus C_{n-1}')
+which is exactly {\displaystyle C_{n}}C_{n}:
+
+{\displaystyle t'=E_{K}(C_{n-1}'\oplus E_{K}^{-1}(C_{n})\oplus C_{n-1}')=E_{K}(E_{K}^{-1}(C_{n}))=C_{n}}t'=E_{K}(C_{n-1}'\oplus E_{K}^{-1}(C_{n})\oplus C_{n-1}')=E_{K}(E_{K}^{-1}(C_{n}))=C_{n}
+and it follows that {\displaystyle t'=C_{n}=t}t'=C_{n}=t.
+
+Therefore, Eve was able to modify the cipher text in transit (without necessarily knowing what plain text it corresponds to) such that an entirely different message, {\displaystyle P'}P', was produced, but the tag for this message matched the tag of the original, and Bob was unaware that the contents had been modified in transit. By definition, a Message Authentication Code is broken if we can find a different message (a sequence of plain-text pairs {\displaystyle P'}P') which produces the same tag as the previous message, P, with {\displaystyle P\not =P'}P\not =P'. It follows that the message authentication protocol, in this usage scenario, has been broken, and Bob has been deceived into believing Alice sent him a message which she did not produce.
+
+If, instead, we use different keys for the encryption and authentication stages, say {\displaystyle K_{1}}K_{1} and {\displaystyle K_{2}}K_{2}, respectively, this attack is foiled. The decryption of the modified cipher-text blocks {\displaystyle C_{i}'}C_{i}' obtains some plain text string {\displaystyle P_{i}'}P_{i}'. However, due to the MAC's usage of a different key {\displaystyle K_{2}}K_{2}, we cannot "undo" the decryption process in the forward step of the computation of the message authentication code so as to produce the same tag; each modified {\displaystyle P_{i}'}P_{i}' will now be encrypted by {\displaystyle K_{2}}K_{2} in the CBC-MAC process to some value {\displaystyle \mathrm {MAC} _{i}\not =C_{i}'}{\displaystyle \mathrm {MAC} _{i}\not =C_{i}'}.
+
+This example also shows that a CBC-MAC cannot be used as a collision-resistant one-way function: given a key it is trivial to create a different message which "hashes" to the same tag.
+
+Allowing the initialization vector to vary in value
+When encrypting data using a block cipher in cipher block chaining (or another) mode, it is common to introduce an initialization vector to the first stage of the encryption process. It is typically required that this vector be chosen randomly (a nonce) and that it is not repeated for any given secret key under which the block cipher operates. This provides semantic security, by means of ensuring the same plain text is not encrypted to the same cipher text, allowing an attacker to infer a relationship exists.
+
+When computing a message authentication code, such as by CBC-MAC, the use of an initialization vector is a possible attack vector.
+
+In the operation of a ciphertext block chaining cipher, the first block of plain text is mixed with the initialization vector using an exclusive OR ({\displaystyle P_{1}\oplus IV}P_{1}\oplus IV). The result of this operation is the input to the block cipher for encryption.
+
+However, when performing encryption and decryption, we are required to send the initialization vector in plain text - typically as the block immediately preceding the first block of cipher text - such that the first block of plain text can be decrypted and recovered successfully. If computing a MAC, we will also need to transmit the initialization vector to the other party in plain text so that they can verify the tag on the message matches the value they have computed.
+
+If we allow the initialization vector to be selected arbitrarily, it follows that the first block of plain text can potentially be modified (transmitting a different message) while producing the same message tag.
+
+Consider a message {\displaystyle M_{1}=P_{1}|P_{2}|\dots }M_{1}=P_{1}|P_{2}|\dots . In particular, when computing the message tag for CBC-MAC, suppose we choose an initialization vector {\displaystyle IV_{1}}IV_{1} such that computation of the MAC begins with {\displaystyle E_{K}(IV_{1}\oplus P_{1})}E_{K}(IV_{1}\oplus P_{1}). This produces a (message, tag) pair {\displaystyle (M_{1},T_{1})}(M_{1},T_{1}).
+
+Now produce the message {\displaystyle M_{2}=P_{1}'|P_{2}|\dots }M_{2}=P_{1}'|P_{2}|\dots . For each bit modified in {\displaystyle P_{1}'}P_{1}', flip the corresponding bit in the initialization vector to produce the initialization vector {\displaystyle IV_{1}'}IV_{1}'. It follows that to compute the MAC for this message, we begin the computation by {\displaystyle E_{K}(P_{1}'\oplus IV_{1}')}E_{K}(P_{1}'\oplus IV_{1}'). As bits in both the plain text and initialization vector have been flipped in the same places, the modification is cancelled in this first stage, meaning the input to the block cipher is identical to that for {\displaystyle M_{1}}M_{1}. If no further changes are made to the plain text, the same tag will be derived despite a different message being transmitted.
+
+If the freedom to select an initialization vector is removed and all implementations of CBC-MAC fix themselves on a particular initialization vector (often the vector of zeroes, but in theory, it could be anything provided all implementations agree), this attack cannot proceed.
+
+To sum up, if the attacker is able to set the IV that will be used for MAC verification, he can perform arbitrary modification of the first data block without invalidating the MAC.
+
+Using predictable initialization vector
+Sometimes IV is used as a counter to prevent message replay attacks. However, if the attacker can predict what IV will be used for MAC verification, he or she can replay previously observed message by modifying the first data block to compensate for the change in the IV that will be used for the verification. For example, if the attacker has observed message {\displaystyle M_{1}=P_{1}|P_{2}|\dots }M_{1}=P_{1}|P_{2}|\dots  with {\displaystyle IV_{1}}IV_{1} and knows {\displaystyle IV_{2}}{\displaystyle IV_{2}}, he can produce {\displaystyle M_{1}'=(P_{1}\oplus IV_{1}\oplus IV_{2})|P_{2}|\dots }{\displaystyle M_{1}'=(P_{1}\oplus IV_{1}\oplus IV_{2})|P_{2}|\dots } that will pass MAC verification with {\displaystyle IV_{2}}{\displaystyle IV_{2}}.
+
+The simplest countermeasure is to encrypt the IV before using it (i.e., prepending IV to the data). Alternatively MAC in CFB mode can be used, because in CFB mode the IV is encrypted before it is XORed with the data.
+
+Another solution (in case protection against message replay attacks is not required) is to always use a zero vector IV.[7] Note that the above formula for {\displaystyle M_{1}'}{\displaystyle M_{1}'} becomes {\displaystyle M_{1}'=(P_{1}\oplus 0\oplus 0)|P_{2}|\dots =P_{1}|P_{2}|\dots =M_{1}}{\displaystyle M_{1}'=(P_{1}\oplus 0\oplus 0)|P_{2}|\dots =P_{1}|P_{2}|\dots =M_{1}}. So since {\displaystyle M_{1}}M_{1} and {\displaystyle M_{1}'}{\displaystyle M_{1}'} are the same message, by definition they will have the same tag. This is not a forgery, rather the intended use of CBC-MAC.
+
+Standards that define the algorithm
+FIPS PUB 113 Computer Data Authentication is a (now obsolete) U.S. government standard that specified the CBC-MAC algorithm using DES as the block cipher.
+
+The CBC-MAC algorithm is equivalent to ISO/IEC 9797-1 MAC Algorithm 1.
+
+See also
+CMAC – A block-cipher–based MAC algorithm which is secure for messages of different lengths (recommended by NIST).
+OMAC and PMAC – Other methods to turn block ciphers into message authentication codes (MACs).
+One-way compression function – Hash functions can be made from block ciphers. But note, there are significant differences in function and uses for security between MACs (such as CBC-MAC) and hashes.
+References
+ M. Bellare, J. Kilian and P. Rogaway. The security of the cipher block chaining message authentication code. JCSS 61(3):362–399, 2000.
+ See Section 5 of Bellare, et al.
+ ISO/IEC 9797-1:1999 Information technology – Security techniques – Message Authentication Codes (MACs) – Part 1: Mechanisms using a block cipher, clause 6.1.3 Padding Method 3
+ C. Rackoff and S. Gorbunov. On the Security of Block Chaining Message Authentication Code.
+ http://spark-university.s3.amazonaws.com/stanford-crypto/slides/05.3-integrity-cbc-mac-and-nmac.pptx
+ Why I hate CBC-MAC by Matthew D. Green
+ Introduction to Modern Cryptography, Second Edition by Jonathan Katz and Yehuda Lindell
+vte
+Cryptographic hash functions & message authentication codes
+ListComparisonKnown attacks
+Common functions	
+MD5SHA-1SHA-2SHA-3BLAKE2
+SHA-3 finalists	
+BLAKEGrøstlJHSkeinKeccak (winner)
+Other functions	
+BLAKE3CubeHashECOHFSBGOSTHAS-160HAVALKupynaLSHMD2MD4MD6MDC-2N-hashRIPEMDRadioGatúnSM3SWIFFTSnefruStreebogTigerVSHWhirlpool
+Password hashing/
+key stretching functions	
+Argon2BalloonbcryptCatenacryptLM hashLyra2MakwaPBKDF2scryptyescrypt
+General purpose
+key derivation functions	
+HKDFKDF1/KDF2
+MAC functions	
+DAACBC-MACGMACHMACNMACOMAC/CMACPMACVMACUMACPoly1305SipHash
+Authenticated
+encryption modes	
+CCMCWCEAXGCMIAPMOCB
+Attacks	
+Collision attackPreimage attackBirthday attackBrute-force attackRainbow tableSide-channel attackLength extension attack
+Design	
+Avalanche effectHash collisionMerkle–Damgård constructionSponge functionHAIFA construction
+Standardization	
+CRYPTRECNESSIENIST hash function competition
+Utilization	
+Hash-based cryptographyMerkle treeMessage authenticationProof of workSaltPepper
+vte
+Cryptography
+Categories: Message authentication codesBlock cipher modes of operation
+Navigation menu
+Not logged inTalkContributionsCreate accountLog in
+ArticleTalk
+ReadEditView historySearch
+Search Wikipedia
+Main page
+Contents
+Current events
+Random article
+About Wikipedia
+Contact us
+Donate
+Contribute
+Help
+Learn to edit
+Community portal
+Recent changes
+Upload file
+Tools
+What links here
+Related changes
+Special pages
+Permanent link
+Page information
+Cite this page
+Wikidata item
+Print/export
+Download as PDF
+Printable version
+
+Languages
+Deutsch
+Français
+Italiano
+日本語
+Português
+Русский
+Türkçe
+4 more
+Edit links
+This page was last edited on 28 September 2020, at 14:27 (UTC).
+Text is available under the Creative Commons Attribution-ShareAlike License; additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy. Wikipedia® is a registered trademark of the Wikimedia Foundation, Inc., a non-profit organization.
+Privacy policyAbout WikipediaDisclaimersContact WikipediaMobile viewDevelopersStatisticsCookie statementWikimedia FoundationPowered by MediaWiki
+
+HMAC
+From Wikipedia, the free encyclopedia
+Jump to navigationJump to search
+
+HMAC-SHA1 generation
+In cryptography, an HMAC (sometimes expanded as either keyed-hash message authentication code or hash-based message authentication code) is a specific type of message authentication code (MAC) involving a cryptographic hash function and a secret cryptographic key. As with any MAC, it may be used to simultaneously verify both the data integrity and the authenticity of a message.
+
+
+Contents
+1	Details
+2	Definition
+3	Implementation
+4	Design principles
+5	Security
+6	Examples
+7	References
+8	External links
+Details
+Any cryptographic hash function, such as SHA-2 or SHA-3, may be used in the calculation of an HMAC; the resulting MAC algorithm is termed HMAC-X, where X is the hash function used (e.g. HMAC-SHA256 or HMAC-SHA3-256). The cryptographic strength of the HMAC depends upon the cryptographic strength of the underlying hash function, the size of its hash output, and the size and quality of the key.
+
+HMAC uses two passes of hash computation. The secret key is first used to derive two keys – inner and outer. The first pass of the algorithm produces an internal hash derived from the message and the inner key. The second pass produces the final HMAC code derived from the inner hash result and the outer key. Thus the algorithm provides better immunity against length extension attacks.
+
+An iterative hash function breaks up a message into blocks of a fixed size and iterates over them with a compression function. For example, SHA-256 operates on 512-bit blocks. The size of the output of HMAC is the same as that of the underlying hash function (e.g., 256 and 512 bits in the case of SHA-256 and SHA-512, respectively), although it can be truncated if desired.
+
+HMAC does not encrypt the message. Instead, the message (encrypted or not) must be sent alongside the HMAC hash. Parties with the secret key will hash the message again themselves, and if it is authentic, the received and computed hashes will match.
+
+The definition and analysis of the HMAC construction was first published in 1996 in a paper by Mihir Bellare, Ran Canetti, and Hugo Krawczyk,[1] and they also wrote RFC 2104 in 1997. The 1996 paper also defined a nested variant called NMAC. FIPS PUB 198 generalizes and standardizes the use of HMACs. HMAC is used within the IPsec, SSH and TLS protocols and for JSON Web Tokens.
+
+Definition
+This definition is taken from RFC 2104:
+
+{\displaystyle {\begin{aligned}\operatorname {HMAC} (K,m)&=\operatorname {H} {\Bigl (}{\bigl (}K'\oplus opad{\bigr )}\parallel \operatorname {H} {\bigl (}\left(K'\oplus ipad\right)\parallel m{\bigr )}{\Bigr )}\\K'&={\begin{cases}\operatorname {H} \left(K\right)&K{\text{ is larger than block size}}\\K&{\text{otherwise}}\end{cases}}\end{aligned}}}{\displaystyle {\begin{aligned}\operatorname {HMAC} (K,m)&=\operatorname {H} {\Bigl (}{\bigl (}K'\oplus opad{\bigr )}\parallel \operatorname {H} {\bigl (}\left(K'\oplus ipad\right)\parallel m{\bigr )}{\Bigr )}\\K'&={\begin{cases}\operatorname {H} \left(K\right)&K{\text{ is larger than block size}}\\K&{\text{otherwise}}\end{cases}}\end{aligned}}}
+where
+
+H is a cryptographic hash function
+m is the message to be authenticated
+K is the secret key
+K' is a block-sized key derived from the secret key, K; either by padding to the right with 0s up to the block size, or by hashing down to less than or equal to the block size first and then padding to the right with zeros
+|| denotes concatenation
+⊕ denotes bitwise exclusive or (XOR)
+opad is the block-sized outer padding, consisting of repeated bytes valued 0x5c
+ipad is the block-sized inner padding, consisting of repeated bytes valued 0x36
+Implementation
+The following pseudocode demonstrates how HMAC may be implemented. Blocksize is 64 (bytes) when using one of the following hash functions: SHA-1, MD5, RIPEMD-128/160.[2]
+
+function hmac is
+    input:
+        key:        Bytes    // Array of bytes
+        message:    Bytes    // Array of bytes to be hashed
+        hash:       Function // The hash function to use (e.g. SHA-1)
+        blockSize:  Integer  // The block size of the hash function (e.g. 64 bytes for SHA-1)
+        outputSize: Integer  // The output size of the hash function (e.g. 20 bytes for SHA-1)
+ 
+    // Keys longer than blockSize are shortened by hashing them
+    if (length(key) > blockSize) then
+        key ← hash(key) // key is outputSize bytes long
+
+    // Keys shorter than blockSize are padded to blockSize by padding with zeros on the right
+    if (length(key) < blockSize) then
+        key ← Pad(key, blockSize) // Pad key with zeros to make it blockSize bytes long
+
+    o_key_pad ← key xor [0x5c * blockSize]   // Outer padded key
+    i_key_pad ← key xor [0x36 * blockSize]   // Inner padded key
+
+    return hash(o_key_pad ∥ hash(i_key_pad ∥ message))
+Design principles
+The design of the HMAC specification was motivated by the existence of attacks on more trivial mechanisms for combining a key with a hash function. For example, one might assume the same security that HMAC provides could be achieved with MAC = H(key || message). However, this method suffers from a serious flaw: with most hash functions, it is easy to append data to the message without knowing the key and obtain another valid MAC ("length-extension attack"). The alternative, appending the key using MAC = H(message || key), suffers from the problem that an attacker who can find a collision in the (unkeyed) hash function has a collision in the MAC (as two messages m1 and m2 yielding the same hash will provide the same start condition to the hash function before the appended key is hashed, hence the final hash will be the same). Using MAC = H(key || message || key) is better, but various security papers have suggested vulnerabilities with this approach, even when two different keys are used.[1][3][4]
+
+No known extension attacks have been found against the current HMAC specification which is defined as H(key || H(key || message)) because the outer application of the hash function masks the intermediate result of the internal hash. The values of ipad and opad are not critical to the security of the algorithm, but were defined in such a way to have a large Hamming distance from each other and so the inner and outer keys will have fewer bits in common. The security reduction of HMAC does require them to be different in at least one bit.[citation needed]
+
+The Keccak hash function, that was selected by NIST as the SHA-3 competition winner, doesn't need this nested approach and can be used to generate a MAC by simply prepending the key to the message, as it is not susceptible to length-extension attacks.[5]
+
+Security
+The cryptographic strength of the HMAC depends upon the size of the secret key that is used. The most common attack against HMACs is brute force to uncover the secret key. HMACs are substantially less affected by collisions than their underlying hashing algorithms alone.[6][7] In particular, in 2006 Mihir Bellare proved that HMAC is a PRF under the sole assumption that the compression function is a PRF.[8] Therefore, HMAC-MD5 does not suffer from the same weaknesses that have been found in MD5.
+
+RFC 2104 requires that "keys longer than B bytes are first hashed using H" which leads to a confusing pseudo-collision: if the key is longer than the hash block size (e.g. 64 characters for SHA-1), then HMAC(k, m) is computed as HMAC(H(k), m).This property is sometimes raised as a possible weakness of HMAC in password-hashing scenarios: it has been demonstrated that it's possible to find a long ASCII string and a random value whose hash will be also an ASCII string, and both values will produce the same HMAC output.[9][10]
+
+In 2006, Jongsung Kim, Alex Biryukov, Bart Preneel, and Seokhie Hong showed how to distinguish HMAC with reduced versions of MD5 and SHA-1 or full versions of HAVAL, MD4, and SHA-0 from a random function or HMAC with a random function. Differential distinguishers allow an attacker to devise a forgery attack on HMAC. Furthermore, differential and rectangle distinguishers can lead to second-preimage attacks. HMAC with the full version of MD4 can be forged with this knowledge. These attacks do not contradict the security proof of HMAC, but provide insight into HMAC based on existing cryptographic hash functions.[11]
+
+In 2009, Xiaoyun Wang et al. presented a distinguishing attack on HMAC-MD5 without using related keys. It can distinguish an instantiation of HMAC with MD5 from an instantiation with a random function with 297 queries with probability 0.87.[12]
+
+In 2011 an informational RFC 6151[13] was published to summarize security considerations in MD5 and HMAC-MD5. For HMAC-MD5 the RFC summarizes that – although the security of the MD5 hash function itself is severely compromised – the currently known "attacks on HMAC-MD5 do not seem to indicate a practical vulnerability when used as a message authentication code", but it also adds that "for a new protocol design, a ciphersuite with HMAC-MD5 should not be included".
+
+In May 2011, RFC 6234 was published detailing the abstract theory and source code for SHA-based HMACs.
+
+Examples
+Here are some non-empty HMAC values, assuming 8-bit ASCII or UTF-8 encoding:
+
+HMAC_MD5("key", "The quick brown fox jumps over the lazy dog")    = 80070713463e7749b90c2dc24911e275
+HMAC_SHA1("key", "The quick brown fox jumps over the lazy dog")   = de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9
+HMAC_SHA256("key", "The quick brown fox jumps over the lazy dog") = f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8
+References
+ Bellare, Mihir; Canetti, Ran; Krawczyk, Hugo (1996). "Keying Hash Functions for Message Authentication": 1–15. CiteSeerX 10.1.1.134.8430.
+ "Definition of HMAC". HMAC: Keyed-Hashing for Message Authentication. sec. 2. doi:10.17487/RFC2104. RFC 2104.
+ Preneel, Bart; van Oorschot, Paul C. (1995). "MDx-MAC and Building Fast MACs from Hash Functions". CiteSeerX 10.1.1.34.3855.
+ Preneel, Bart; van Oorschot, Paul C. (1995). "On the Security of Two MAC Algorithms". CiteSeerX 10.1.1.42.8908.
+ Keccak team. "Keccak Team – Design and security". Retrieved 31 October 2019. Unlike SHA-1 and SHA-2, Keccak does not have the length-extension weakness, hence does not need the HMAC nested construction. Instead, MAC computation can be performed by simply prepending the message with the key.
+ Bruce Schneier (August 2005). "SHA-1 Broken". Retrieved 9 January 2009. although it doesn't affect applications such as HMAC where collisions aren't important
+ IETF (February 1997). "Security". HMAC: Keyed-Hashing for Message Authentication. sec. 6. doi:10.17487/RFC2104. RFC 2104. Retrieved 3 December 2009. The strongest attack known against HMAC is based on the frequency of collisions for the hash function H ("birthday attack") [PV,BCK2], and is totally impractical for minimally reasonable hash functions.
+ Bellare, Mihir (June 2006). "New Proofs for NMAC and HMAC: Security without Collision-Resistance". In Dwork, Cynthia (ed.). Advances in Cryptology – Crypto 2006 Proceedings. Lecture Notes in Computer Science 4117. Springer-Verlag. Retrieved 25 May 2010. This paper proves that HMAC is a PRF under the sole assumption that the compression function is a PRF. This recovers a proof based guarantee since no known attacks compromise the pseudorandomness of the compression function, and it also helps explain the resistance-to-attack that HMAC has shown even when implemented with hash functions whose (weak) collision resistance is compromised.
+ "PBKDF2+HMAC hash collisions explained · Mathias Bynens". mathiasbynens.be. Retrieved 7 August 2019.
+ "Aaron Toponce : Breaking HMAC". Retrieved 7 August 2019.
+ Jongsung, Kim; Biryukov, Alex; Preneel, Bart; Hong, Seokhie (2006). "On the Security of HMAC and NMAC Based on HAVAL, MD4, MD5, SHA-0 and SHA-1" (PDF).
+ Wang, Xiaoyun; Yu, Hongbo; Wang, Wei; Zhang, Haina; Zhan, Tao (2009). "Cryptanalysis on HMAC/NMAC-MD5 and MD5-MAC" (PDF). Retrieved 15 June 2015.
+ "RFC 6151 – Updated Security Considerations for the MD5 Message-Digest and the HMAC-MD5 Algorithms". Internet Engineering Task Force. March 2011. Retrieved 15 June 2015.
+Notes
+Mihir Bellare, Ran Canetti and Hugo Krawczyk, Keying Hash Functions for Message Authentication, CRYPTO 1996, pp. 1–15 (PS or PDF).
+Mihir Bellare, Ran Canetti and Hugo Krawczyk, Message authentication using hash functions: The HMAC construction, CryptoBytes 2(1), Spring 1996 (PS or PDF).
+External links
+RFC2104
+Online HMAC Generator / Tester Tool
+FIPS PUB 198-1, The Keyed-Hash Message Authentication Code (HMAC)
+C HMAC implementation
+Python HMAC implementation
+Java implementation
+
+vte
+Cryptographic hash functions & message authentication codes
+ListComparisonKnown attacks
+Common functions	
+MD5SHA-1SHA-2SHA-3BLAKE2
+SHA-3 finalists	
+BLAKEGrøstlJHSkeinKeccak (winner)
+Other functions	
+BLAKE3CubeHashECOHFSBGOSTHAS-160HAVALKupynaLSHMD2MD4MD6MDC-2N-hashRIPEMDRadioGatúnSM3SWIFFTSnefruStreebogTigerVSHWhirlpool
+Password hashing/
+key stretching functions	
+Argon2BalloonbcryptCatenacryptLM hashLyra2MakwaPBKDF2scryptyescrypt
+General purpose
+key derivation functions	
+HKDFKDF1/KDF2
+MAC functions	
+DAACBC-MACGMACHMACNMACOMAC/CMACPMACVMACUMACPoly1305SipHash
+Authenticated
+encryption modes	
+CCMCWCEAXGCMIAPMOCB
+Attacks	
+Collision attackPreimage attackBirthday attackBrute-force attackRainbow tableSide-channel attackLength extension attack
+Design	
+Avalanche effectHash collisionMerkle–Damgård constructionSponge functionHAIFA construction
+Standardization	
+CRYPTRECNESSIENIST hash function competition
+Utilization	
+Hash-based cryptographyMerkle treeMessage authenticationProof of workSaltPepper
+vte
+Cryptography
+Categories: Message authentication codesHashing
+Navigation menu
+Not logged inTalkContributionsCreate accountLog in
+ArticleTalk
+ReadEditView historySearch
+Search Wikipedia
+Main page
+Contents
+Current events
+Random article
+About Wikipedia
+Contact us
+Donate
+Contribute
+Help
+Learn to edit
+Community portal
+Recent changes
+Upload file
+Tools
+What links here
+Related changes
+Special pages
+Permanent link
+Page information
+Cite this page
+Wikidata item
+Print/export
+Download as PDF
+Printable version
+
+Languages
+العربية
+Deutsch
+Español
+Français
+Bahasa Indonesia
+Português
+Русский
+Türkçe
+中文
+7 more
+Edit links
+This page was last edited on 1 November 2020, at 10:04 (UTC).
+Text is available under the Creative Commons Attribution-ShareAlike License; additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy. Wikipedia® is a registered trademark of the Wikimedia Foundation, Inc., a non-profit organization.
+Privacy policyAbout WikipediaDisclaimersContact WikipediaMobile viewDevelopersStatisticsCookie statementWikimedia FoundationPowered by MediaWiki
+
+This is a file from the Wikimedia Commons
+File:SHAhmac.svg
+From Wikipedia, the free encyclopedia
+Jump to navigationJump to search
+File File history File usage Global file usage Metadata
+File:SHAhmac.svg
+Size of this PNG preview of this SVG file: 800 × 599 pixels. Other resolutions: 320 × 240 pixels | 640 × 479 pixels | 1,024 × 767 pixels | 1,280 × 958 pixels | 1,086 × 813 pixels.
+Original file ‎(SVG file, nominally 1,086 × 813 pixels, file size: 31 KB)
+
+Open in Media ViewerConfiguration
+	This is a file from the Wikimedia Commons. Information from its description page there is shown below.
+Commons is a freely licensed media file repository. You can help.
+Summary
+Description	
+English: Diagram of SHA1-HMAC generation.
+Date	2 August 2014, 19:51:38
+Source	Own work
+Author	Gdrooid
+Licensing
+I, the copyright holder of this work, hereby publish it under the following license:
+Creative Commons CC-Zero	This file is made available under the Creative Commons CC0 1.0 Universal Public Domain Dedication.
+The person who associated a work with this deed has dedicated the work to the public domain by waiving all of their rights to the work worldwide under copyright law, including all related and neighboring rights, to the extent allowed by law. You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission.
+File history
+Click on a date/time to view the file as it appeared at that time.
+
+Date/Time	Thumbnail	Dimensions	User	Comment
+current	17:51, 2 August 2014	Thumbnail for version as of 17:51, 2 August 2014	1,086 × 813 (31 KB)	Gdrooid	User created page with UploadWizard
+File usage
+The following pages on the English Wikipedia use this file (pages on other projects are not listed):
+HMAC
+Global file usage
+The following other wikis use this file:
+
+Usage on ar.wikipedia.org
+رمز مصادقة الرسالة استنادا على التجزئة هاش HMAC
+Usage on es.wikipedia.org
+HMAC
+Usage on fr.wikipedia.org
+Keyed-hash message authentication code
+Usage on id.wikipedia.org
+HMAC
+Usage on pt.wikipedia.org
+HMAC
+Usage on ru.wikipedia.org
+HMAC
+Usage on www.wikidata.org
+Q1669397
+Usage on zh.wikipedia.org
+金鑰雜湊訊息鑑別碼
+Metadata
+This file contains additional information, probably added from the digital camera or scanner used to create or digitize it.
+
+If the file has been modified from its original state, some details may not fully reflect the modified file.
+
+Navigation menu
+Not logged inTalkContributionsCreate accountLog in
+FileTalk
+ReadView on CommonsSearch
+Search Wikipedia
+Main page
+Contents
+Current events
+Random article
+About Wikipedia
+Contact us
+Donate
+Contribute
+Help
+Learn to edit
+Community portal
+Recent changes
+Upload file
+Tools
+What links here
+Special pages
+Printable version
+Page information
+
+Languages
+Privacy policyAbout WikipediaDisclaimersContact WikipediaMobile viewDevelopersStatisticsCookie statementWikimedia FoundationPowered by MediaWiki
