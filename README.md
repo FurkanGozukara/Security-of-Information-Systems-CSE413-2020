@@ -1,5 +1,8 @@
 # Security-of-Information-Systems-CSE413-2020
+
 Security of Information Systems 2020 CSE413 Toros University Mersin
+
+Discord Channel of the Course for every kind of questions and answers : https://discord.gg/6Mrb8MwteQ
 
 This repository is dedicated to the Security of Information Systems Course, 2020, Toros University, Software Engineering Department
 
